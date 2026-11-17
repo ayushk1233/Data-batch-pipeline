@@ -2,6 +2,102 @@
 
 A local Python CLI turns procurement CSVs into one validated spend row per input record. Companies are described by JSON or YAML; the taxonomy is loaded at runtime. The same code supports a company with no labels and a new tree of up to four levels.
 
+[Setup](#setup) · [Run the pipeline](#run-one-company-end-to-end) · [Validate](#verify-outputs-and-tests) · [Configuration](#configuration-and-blind-test)
+
+![Animated overview of purchase files, company config and runtime taxonomy moving through ingestion, normalization, entity resolution, classification and validated CSV export. Included and excluded records remain in one output file.](docs/assets/pipeline-flow.gif)
+
+*Illustrative batch flow, not a runtime recording. [View the static overview](docs/assets/pipeline-overview.png).*
+
+## Architecture
+
+One local batch process reads the company config and input files, then writes the submission CSV and a separate private audit trail. The diagram follows the implemented modules; the taxonomy and optional model are runtime inputs.
+
+```mermaid
+flowchart TB
+    subgraph INPUTS["Runtime inputs"]
+        CFG["Company config<br/>JSON or YAML"]
+        RAW["Purchase CSV files"]
+        TAX["Runtime taxonomy<br/>Up to four levels"]
+        MODEL["Optional private<br/>trained text model"]
+    end
+
+    subgraph ENGINE["Local Python batch"]
+        CLI["CLI and config validation<br/>cli.py / config.py"]
+        READ["Read and canonicalize<br/>ingest.py / eligibility.py"]
+        MONEY["Normalize tax, FX and signed values<br/>normalize.py / finance.py"]
+        MATCH["Resolve entities and purchase overlaps<br/>entities.py / matching.py"]
+        CLASSIFY["Classify included records<br/>classify.py / supervised.py"]
+        KEEP["Retain excluded records<br/>Reason, zero spend, blank categories"]
+        CHECK["Validate and export atomically<br/>export.py"]
+        CLI --> READ
+        READ -- eligible --> MONEY
+        MONEY --> MATCH
+        MATCH -- included --> CLASSIFY
+        CLASSIFY --> CHECK
+        READ -- excluded --> KEEP
+        MATCH -. duplicate .-> KEEP
+        KEEP --> CHECK
+    end
+
+    CFG --> CLI
+    RAW --> READ
+    TAX --> CLASSIFY
+    MODEL -. optional artifact .-> CLASSIFY
+    CHECK --> CSV["Submission CSV<br/>Included and excluded rows"]
+    CHECK -.-> AUDIT["Private diagnostics<br/>Provenance, flags and timings"]
+
+    classDef input fill:#eef2ff,stroke:#818cf8,color:#312e81
+    classDef process fill:#eff6ff,stroke:#60a5fa,color:#172554
+    classDef output fill:#ecfdf5,stroke:#34d399,color:#064e3b
+    classDef private fill:#fffbeb,stroke:#fbbf24,color:#78350f
+    class CFG,RAW,TAX input
+    class CLI,READ,MONEY,MATCH,CLASSIFY,CHECK process
+    class CSV output
+    class MODEL,AUDIT,KEEP private
+```
+
+<details>
+<summary>View the output contract</summary>
+
+Every input record receives one output row, including exclusions:
+
+```text
+record_id,include,exclusion_reason,supplier_key,item_key,spend,l1,l2,l3,l4,confidence
+```
+
+Included rows carry net spend, entity keys and a valid leaf path. Excluded rows carry a reason code, zero spend and blank categories. A valid output schema does not establish semantic classification accuracy.
+
+</details>
+
+## How labels remain optional
+
+The runtime taxonomy supplies the available paths. A private trained model can replace a prediction only when its result passes the implemented checks. A company with no labelled examples uses the taxonomy route directly.
+
+```mermaid
+flowchart TD
+    RECORD["Included record<br/>Description and available context"] --> RETRIEVE["Taxonomy-driven retrieval<br/>Lexical or local semantic model"]
+    RETRIEVE --> CANDIDATE["Valid runtime leaf candidate"]
+    CANDIDATE --> ARTIFACT{"Private artifact<br/>provided?"}
+    ARTIFACT -- No --> FALLBACK["Keep taxonomy prediction"]
+    ARTIFACT -- Yes --> SCORE["Apply the local text classifier"]
+    SCORE --> ACCEPT{"In-vocabulary evidence,<br/>valid known leaf and<br/>model score at least 0.55?"}
+    ACCEPT -- No --> FALLBACK
+    ACCEPT -- Yes --> LEARNED["Use trained prediction"]
+    FALLBACK --> RESULT["Exact leaf spelling<br/>and confidence score"]
+    LEARNED --> RESULT
+
+    classDef source fill:#eef2ff,stroke:#818cf8,color:#312e81
+    classDef route fill:#eff6ff,stroke:#60a5fa,color:#172554
+    classDef decision fill:#fffbeb,stroke:#fbbf24,color:#78350f
+    classDef result fill:#ecfdf5,stroke:#34d399,color:#064e3b
+    class RECORD,CANDIDATE source
+    class RETRIEVE,SCORE,FALLBACK,LEARNED route
+    class ARTIFACT,ACCEPT decision
+    class RESULT result
+```
+
+Confidence scores are uncalibrated. The fallback keeps outputs within the runtime tree; it does not guarantee that the selected category is correct. These diagrams use [GitHub's Mermaid rendering](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams).
+
 ## Setup
 
 Python 3.11 is the model-enabled reference environment. Python 3.10+ can run the standard-library lexical pipeline with JSON configs.

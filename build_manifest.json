@@ -40,14 +40,18 @@
     "requirements.txt": "b0cfc49df15583ce5dc74250055bc5cbbb3a350bad13e5e13cb15e614a6f88f1",
     "requirements-ml.txt": "e9d9522517ede25e3d17e74e56bfeca646dff5394c1df3a1608baabfa9620627",
     "requirements-yaml.txt": "d7698a51fbd666cc837e6662f00be9f8541a72418249dc9ecff72aa39378eb4e",
-    "README.md": "46b241bf7166db4ddff4b24496680763ab6162622ad046f8e36466c4c49abe85",
+    "README.md": "0bbe31d11e32bda3041fe412ebdaaa3d9d10f3a9595faaebbae8b3c58a47c003",
     "APPROACH.md": "999d5401112e56b8c60d3c15d237097243f6b075e7d3ae3eac53e9a9b22f863c",
     "DECISIONS.md": "1cc647426e069fa917a7dd8f7b9bd3b6f53b81a1d34d234f2a2af8cbb41b7a57",
     "REVIEW.md": "9bf8b56c141c0ab65d9f4b6fab298aaf5c98b0c7522327a455e585f20afbfee3",
     "TASKS.md": "01309822621fdcbedd747be7a26e6c222261fa2a526461c646aad55cfa833e2e",
     "evaluation_results.json": "e267971e7dc0ffb0ba99865f751d627734bb4097ad72c36ead29721ca0996b49",
     "submission/Ayush_Kumar__A.csv": "433bdd4de8ed132d63434a4747dc416e16124d27a388bfc164d50ee3f502d3e9",
-    "submission/Ayush_Kumar__B.csv": "dd81b212f9fd3d5a2d9facae49ce26709731f003faa9027a07ee9677396a2bd2"
+    "submission/Ayush_Kumar__B.csv": "dd81b212f9fd3d5a2d9facae49ce26709731f003faa9027a07ee9677396a2bd2",
+    "docs/assets/README.md": "1bae738d56fa8464a9d17e29602a386e883bad38ad60e6f6f137bdd15507d653",
+    "docs/assets/pipeline-flow.gif": "0075b83dfc6285b0ee89bc2c75934372b5240facfc6004a1795874031acbd61a",
+    "docs/assets/pipeline-overview.png": "90c653cbd5fb8ecff35f2b32c894e1eeb057fc4097b776714257f3bf6db63605",
+    "docs/assets/render_pipeline.swift": "7643c09b22d285110f82935469cf8bb4dafbd44e05df8f2bf77dfabe1e6f631c"
   },
   "production_code_sha256": "9acb0dba0f3370dcef3f9f45c7fbba7c8e4168cdd4cde2d2cdc5afb7d12a8c7e",
   "runtime_model": {
@@ -55,5 +59,6 @@
     "revision": "836121a0533e5664b21c7aacc5d22951f2b8b25b"
   },
   "confidential_inputs_and_trained_artifacts": "excluded from public manifest; private hashes retained locally",
-  "privacy_rules_updated_on": "2026-11-18"
+  "privacy_rules_updated_on": "2026-11-18",
+  "documentation_visuals_added_on": "2026-11-18"
 }
