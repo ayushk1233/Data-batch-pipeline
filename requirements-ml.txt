@@ -1,0 +1,9 @@
+# Exact versions used for the local model-enabled verification (Python 3.11).
+# General-purpose encoder weights are installed separately; never commit them.
+sentence-transformers==5.7.0
+transformers==4.46.3
+torch==2.14.0
+numpy==2.4.6
+scipy==1.17.1
+scikit-learn==1.9.1
+joblib==1.6.0

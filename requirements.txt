@@ -1,0 +1,2 @@
+# The lexical JSON-config pipeline uses only the Python standard library.
+# Install requirements-ml.txt for the measured semantic/supervised route.

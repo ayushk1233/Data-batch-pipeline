@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "reporting_currency": "ZAR",
+  "taxonomy": {
+    "file": "taxonomy_A.csv",
+    "columns": [
+      "category_l1",
+      "category_l2",
+      "category_l3"
+    ]
+  },
+  "sources": [
+    {
+      "name": "erp",
+      "file": "erp_goods_receipts.csv",
+      "prefix": "ERP:",
+      "priority": 0,
+      "columns": {
+        "record_id": "line_id",
+        "amount": "value_zar",
+        "description": [
+          "material_short_text",
+          "service_short_text"
+        ],
+        "supplier_id": "vendor_id",
+        "supplier_name": "supplier_name",
+        "item_id": "material_number",
+        "po": "po_number",
+        "po_item": "po_item",
+        "receipt": "receipt_document",
+        "receipt_item": "receipt_item",
+        "quantity": "quantity",
+        "uom": "uom",
+        "date": "posting_date"
+      },
+      "currency": "ZAR",
+      "amount_semantics": "net",
+      "date_formats": [
+        "%Y-%m-%d"
+      ],
+      "supplier_namespace": "erp-vendor",
+      "item_namespace": "erp-material",
+      "status": {
+        "missing": "approved",
+        "approved": [
+          "Approved",
+          "Paid"
+        ],
+        "cancelled": [
+          "Cancelled",
+          "Canceled"
+        ]
+      },
+      "reexports": false
+    },
+    {
+      "name": "tool",
+      "file": "invoice_tool_export.csv",
+      "prefix": "TOOL:",
+      "priority": 1,
+      "columns": {
+        "record_id": "tool_record_id",
+        "amount": "gross_amount",
+        "description": "line_text",
+        "supplier_name": "supplier_name_as_captured",
+        "po": "po_reference",
+        "invoice": "invoice_number",
+        "quantity": "quantity",
+        "date": "invoice_date",
+        "vat_rate": "vat_rate",
+        "currency": "currency",
+        "status": "status"
+      },
+      "currency": "ZAR",
+      "amount_semantics": "gross",
+      "default_vat": "15%",
+      "date_formats": [
+        "%Y-%m-%d",
+        "%d/%m/%Y",
+        "%d-%b-%y"
+      ],
+      "supplier_namespace": "tool-vendor",
+      "item_namespace": "tool-material",
+      "status": {
+        "missing": "approved",
+        "approved": [
+          "Approved",
+          "Paid"
+        ],
+        "cancelled": [
+          "Cancelled",
+          "Canceled"
+        ]
+      },
+      "reexports": true
+    }
+  ],
+  "non_procurement": [
+    {
+      "field": "description",
+      "pattern": "^(?:intercompany (?:charge|transfer|settlement)|partner billing|corporate income tax|vat (?:payment|remittance)|withholding tax|dividend payment|loan interest|royalty payment)(?:\\s|$)"
+    }
+  ],
+  "matching": {
+    "enabled": true,
+    "amount_tolerance": "0.02",
+    "amount_relative_tolerance": "0",
+    "date_window_days": 120,
+    "description_threshold": 0.78,
+    "supplier_threshold": 0.88,
+    "max_candidates": 100
+  },
+  "classifier": {
+    "mode": "lexical",
+    "model": "sentence-transformers/LaBSE",
+    "revision": "836121a0533e5664b21c7aacc5d22951f2b8b25b",
+    "local_files_only": true,
+    "device": "cpu",
+    "batch_size": 64,
+    "max_length": 128,
+    "semantic_weight": 0.85
+  },
+  "financial": {
+    "missing_amount": "error"
+  }
+}

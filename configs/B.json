@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "reporting_currency": "USD",
+  "taxonomy": {
+    "file": "taxonomy_B.csv",
+    "columns": [
+      "category_l1",
+      "category_l2",
+      "category_l3"
+    ]
+  },
+  "sources": [
+    {
+      "name": "invoices",
+      "file": "invoice_lines.csv",
+      "prefix": "",
+      "priority": 0,
+      "columns": {
+        "record_id": "line_id",
+        "amount": "line_amount",
+        "description": "line_description",
+        "context": [
+          "gl_account_description"
+        ],
+        "supplier_id": "vendor_id",
+        "item_id": "material_number",
+        "po": "po_number",
+        "po_item": "po_line",
+        "invoice": "invoice_number",
+        "invoice_line": "invoice_line",
+        "quantity": "quantity",
+        "currency": "currency",
+        "fx_rate": "currency_rate",
+        "date": "invoice_date"
+      },
+      "currency": "USD",
+      "amount_semantics": "net",
+      "date_formats": [
+        "%Y-%m-%d"
+      ],
+      "supplier_namespace": "vendor",
+      "item_namespace": "material",
+      "namespace_column": "source_system",
+      "status": {
+        "missing": "approved",
+        "approved": [
+          "Approved",
+          "Paid"
+        ],
+        "cancelled": [
+          "Cancelled",
+          "Canceled"
+        ]
+      },
+      "reexports": false
+    }
+  ],
+  "fx": {
+    "file": "fx_rates_usd.csv",
+    "currency_column": "currency",
+    "month_column": "month",
+    "rate_column": "units_per_usd",
+    "direction": "units_per_reporting"
+  },
+  "non_procurement": [
+    {
+      "field": "gl_account_description",
+      "pattern": "^(?:IC\\d+|IC Payables|I/C Payable|Intercompany(?:\\s.*)?)$"
+    },
+    {
+      "field": "description",
+      "pattern": "^(?:intercompany (?:charge|transfer|settlement)|partner billing|corporate income tax|vat (?:payment|remittance)|withholding tax|dividend payment|loan interest|royalty payment)(?:\\s|$)"
+    }
+  ],
+  "matching": {
+    "enabled": false
+  },
+  "classifier": {
+    "mode": "semantic",
+    "model": "sentence-transformers/LaBSE",
+    "revision": "836121a0533e5664b21c7aacc5d22951f2b8b25b",
+    "local_files_only": true,
+    "device": "cpu",
+    "batch_size": 64,
+    "max_length": 128,
+    "semantic_weight": 0.85
+  },
+  "financial": {
+    "missing_amount": "estimate_unit_median",
+    "missing_fx": "nearest_month",
+    "max_fx_gap_months": 24
+  }
+}

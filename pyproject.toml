@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spend-pipeline"
+version = "0.1.0"
+description = "Configurable local procurement spend pipeline"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+spend-pipeline = "spend_pipeline.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["spend_pipeline*", "evaluation*"]
+exclude = ["tests*", "private*"]

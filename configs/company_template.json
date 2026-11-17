@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "reporting_currency": "USD",
+  "taxonomy": {
+    "file": "taxonomy.csv",
+    "columns": [
+      "l1",
+      "l2",
+      "l3",
+      "l4"
+    ]
+  },
+  "sources": [
+    {
+      "name": "invoices",
+      "file": "invoice_lines.csv",
+      "prefix": "",
+      "priority": 0,
+      "columns": {
+        "record_id": "line_id",
+        "amount": "net_amount",
+        "description": "description",
+        "supplier_id": "vendor_id",
+        "supplier_name": "supplier_name",
+        "item_id": "material_number",
+        "quantity": "quantity",
+        "invoice": "invoice_number",
+        "invoice_line": "invoice_line",
+        "date": "invoice_date",
+        "currency": "currency",
+        "fx_rate": "currency_rate",
+        "status": "status",
+        "context": [
+          "account_description"
+        ]
+      },
+      "currency": "USD",
+      "amount_semantics": "net",
+      "date_formats": [
+        "%Y-%m-%d"
+      ],
+      "supplier_namespace": "vendor",
+      "item_namespace": "material",
+      "status": {
+        "missing": "error",
+        "approved": [
+          "approved",
+          "paid"
+        ],
+        "cancelled": [
+          "cancelled",
+          "canceled"
+        ]
+      },
+      "reexports": false
+    }
+  ],
+  "non_procurement": [],
+  "classifier": {
+    "mode": "semantic",
+    "model": "sentence-transformers/LaBSE",
+    "revision": "836121a0533e5664b21c7aacc5d22951f2b8b25b",
+    "local_files_only": true,
+    "device": "cpu",
+    "batch_size": 64,
+    "max_length": 128,
+    "semantic_weight": 0.85
+  },
+  "financial": {
+    "missing_amount": "error",
+    "missing_fx": "error"
+  }
+}
