@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "reporting_currency": "USD",
+  "taxonomy": {
+    "file": "category_tree_C.csv",
+    "columns": [
+      "level_1",
+      "level_2",
+      "level_3",
+      "level_4"
+    ]
+  },
+  "sources": [
+    {
+      "name": "invoices",
+      "file": "invoice_lines.csv",
+      "prefix": "",
+      "priority": 0,
+      "columns": {
+        "record_id": "line_id",
+        "amount": "line_amount_usd",
+        "description": "line_description",
+        "context": [
+          "product_service_description",
+          "invoice_description",
+          "gl_account_description"
+        ],
+        "supplier_name": "supplier_name",
+        "quantity": "quantity",
+        "uom": "uom",
+        "invoice": "invoice_number",
+        "invoice_line": "invoice_line",
+        "date": "invoice_date",
+        "status": "status"
+      },
+      "currency": "USD",
+      "amount_semantics": "net",
+      "date_formats": [
+        "%m/%d/%Y"
+      ],
+      "supplier_namespace": "vendor",
+      "item_namespace": "material",
+      "status": {
+        "missing": "error",
+        "approved": [
+          "approved",
+          "paid"
+        ],
+        "cancelled": [
+          "cancelled",
+          "canceled"
+        ]
+      },
+      "reexports": true
+    }
+  ],
+  "non_procurement": [
+    {
+      "field": "gl_account_description",
+      "pattern": "^(?:IC\\d+|IC Payables|I/C Payable|Intercompany(?:\\s.*)?)$"
+    },
+    {
+      "field": "description",
+      "pattern": "^(?:intercompany (?:charge|transfer|settlement)|partner billing|corporate income tax|vat (?:payment|remittance)|withholding tax|dividend payment|loan interest|royalty payment)(?:\\s|$)"
+    }
+  ],
+  "classifier": {
+    "mode": "semantic",
+    "model": "sentence-transformers/LaBSE",
+    "revision": "836121a0533e5664b21c7aacc5d22951f2b8b25b",
+    "local_files_only": true,
+    "device": "cpu",
+    "batch_size": 64,
+    "max_length": 128,
+    "semantic_weight": 0.85
+  },
+  "financial": {
+    "missing_amount": "error",
+    "missing_fx": "error"
+  },
+  "matching": {
+    "enabled": true
+  }
+}
